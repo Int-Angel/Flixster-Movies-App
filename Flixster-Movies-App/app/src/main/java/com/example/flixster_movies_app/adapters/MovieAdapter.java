@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.example.flixster_movies_app.R;
 import com.example.flixster_movies_app.models.Movie;
 
@@ -70,7 +71,11 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.ViewHolder>
             tvTitle.setText(movie.getTitle());
             tvOverview.setText(movie.getOverview());
 
-            Glide.with(context).load(movie.getPosterPath()).into(ivPoster);
+            Glide.with(context)
+                    .load(movie.getPosterPath())
+                    .placeholder(R.drawable.flicks_movie_placeholder)
+                    .error(R.drawable.flicks_movie_placeholder)
+                    .into(ivPoster);
         }
     }
 }
