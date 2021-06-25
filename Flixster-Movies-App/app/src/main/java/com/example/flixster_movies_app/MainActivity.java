@@ -6,10 +6,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.flixster_movies_app.adapters.MovieAdapter;
+import com.example.flixster_movies_app.databinding.ActivityMainBinding;
 import com.example.flixster_movies_app.models.Movie;
 
 import org.json.JSONArray;
@@ -22,6 +24,10 @@ import java.util.List;
 import okhttp3.Headers;
 
 
+/*
+*   Todo: Extra user stories
+* */
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String NOW_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=6513ffdbf170591e210979d73e4e11b1";
@@ -31,30 +37,40 @@ public class MainActivity extends AppCompatActivity {
     List<Movie> movies;
     MovieAdapter movieAdapter;
 
+    AsyncHttpClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        rvMovies = findViewById(R.id.rvMovies);
         movies = new ArrayList<>();
+        client = new AsyncHttpClient();
+
+        rvMovies = binding.rvMovies;
 
         movieAdapter = new MovieAdapter(this, movies);
         rvMovies.setAdapter(movieAdapter);
         rvMovies.setLayoutManager(new LinearLayoutManager(this));
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(NOW_PLAYING_URL, new JsonHttpResponseHandler() {
+        GetMovies();
+    }
+
+    void GetMovies(){
+
+        client.get(NOW_PLAYING_URL, new JsonHttpResponseHandler() { // API assync call
             @Override
             public void onSuccess(int i, Headers headers, JSON json) {
                 Log.e(TAG, "OnSuccess");
 
-                JSONObject jsonObject = json.jsonObject;
-
                 try {
-                    JSONArray results = jsonObject.getJSONArray("results");
+                    JSONArray results = json.jsonObject.getJSONArray("results");
+
                     Log.i(TAG,"Results: "+results.toString());
-                    movies.addAll(Movie.fromJsonArray(results));
+                    movies.addAll(Movie.fromJsonArray(results)); //Transform all movies to Movie object
                     Log.i(TAG,"Movies: "+ movies.size());
 
                     movieAdapter.notifyDataSetChanged();
@@ -72,7 +88,3 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
-//API Key: 6513ffdbf170591e210979d73e4e11b1
-
-//https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed
-//https://api.themoviedb.org/3/movie/now_playing?api_key=6513ffdbf170591e210979d73e4e11b1

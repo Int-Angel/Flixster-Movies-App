@@ -14,9 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.target.Target;
 import com.example.flixster_movies_app.MovieDetailsActivity;
 import com.example.flixster_movies_app.R;
+import com.example.flixster_movies_app.databinding.ItemMovieBinding;
 import com.example.flixster_movies_app.models.Movie;
 
 
@@ -41,7 +43,7 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.ViewHolder>
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG,"onCreateViewHolder");
-        View movieView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie, parent, false);
+        View movieView = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false);
         return new ViewHolder(movieView);
     }
 
@@ -66,6 +68,8 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.ViewHolder>
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            //ItemMovieBinding binding = ItemMovieBinding.inflate(getLayoutInflater())
+
             ivPoster = itemView.findViewById(R.id.ivPoster);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvOverview = itemView.findViewById(R.id.tvOverview);
@@ -76,23 +80,28 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.ViewHolder>
         public void Bind(Movie movie){
             tvTitle.setText(movie.getTitle());
             tvOverview.setText(movie.getOverview());
+
             String imageUrl;
+            int placeholderId;
 
             if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
                 imageUrl = movie.getBackdropPosterPath();
+                placeholderId = R.drawable.flicks_backdrop_placeholder;
             }else{
                 imageUrl = movie.getPosterPath();
+                placeholderId = R.drawable.flicks_movie_placeholder;
             }
 
+            int radius = 10;
             Glide.with(context)
                     .load(imageUrl)
-                    .placeholder(R.drawable.flicks_movie_placeholder)
-                    .error(R.drawable.flicks_movie_placeholder)
+                    .placeholder(placeholderId)
+                    .error(placeholderId)
+                    .transform(new RoundedCorners(radius))
                     .into(ivPoster);
         }
 
-        @Override
-        public void onClick(View v) {
+        void OpenMovieDetails(){
             int position = getAdapterPosition();
             if(position != RecyclerView.NO_POSITION){
                 Movie movie = movies.get(position);
@@ -100,6 +109,11 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.ViewHolder>
                 intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
                 context.startActivity(intent);
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+            OpenMovieDetails();
         }
     }
 }
