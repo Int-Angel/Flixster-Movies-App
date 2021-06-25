@@ -68,7 +68,7 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.ViewHolder>
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            //ItemMovieBinding binding = ItemMovieBinding.inflate(getLayoutInflater())
+            //ItemMovieBinding binding = ItemMovieBinding.inflate(getLayoutInflater());
 
             ivPoster = itemView.findViewById(R.id.ivPoster);
             tvTitle = itemView.findViewById(R.id.tvTitle);
